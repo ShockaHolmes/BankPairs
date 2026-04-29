@@ -13,7 +13,15 @@ class InvestmentAccount(Account):
         self.interest_rate = interest_rate
 
     def apply_interest(self):
-        self.balance += self.balance * self.interest_rate
+        interest_amount = self._to_cents(self.get_balance() * self.interest_rate)
+        self._balance += interest_amount
+        self._transactions.append(
+            f"Interest applied: {self._format_cents(interest_amount)}, New Balance: {self._format_cents(self._balance)}"
+        )
 
     def debit(self, amount):
-        self.balance -= amount
+        amount_in_cents = self._to_cents(amount)
+        self._balance -= amount_in_cents
+        self._transactions.append(
+            f"Debited: {self._format_cents(amount_in_cents)}, New Balance: {self._format_cents(self._balance)}"
+        )
