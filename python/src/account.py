@@ -53,6 +53,39 @@ class Account(ABC):
         # TODO: Implement getter
         return self._account_number
 
+    def get_account_type(self):
+        return self.__class__.__name__
+
+    def get_holder_name(self):
+        holder = self.get_account_holder()
+
+        if hasattr(holder, "get_first_name") and hasattr(holder, "get_last_name"):
+            return f"{holder.get_first_name()} {holder.get_last_name()}"
+
+        if hasattr(holder, "get_business_name"):
+            return holder.get_business_name()
+
+        return str(holder)
+
+    def get_holder_email(self):
+        holder = self.get_account_holder()
+        if hasattr(holder, "get_email"):
+            return holder.get_email()
+        return ""
+
+    def get_holder_phone_number(self):
+        holder = self.get_account_holder()
+        if hasattr(holder, "get_phone_number"):
+            return holder.get_phone_number()
+        return ""
+
+    def deposit(self, amount):
+        self.credit(amount)
+        return self.get_balance()
+
+    def withdraw(self, amount):
+        return self.debit(amount)
+
     def credit(self, amount):
         # TODO: Implement credit method (add money to account)
         amount = self._to_cents(amount)
@@ -74,3 +107,14 @@ class Account(ABC):
     def get_transactions(self):
         # TODO: Implement method to return transaction history
         return self._transactions
+
+    def get_account_summary(self):
+        return {
+            "customer_name": self.get_holder_name(),
+            "account_type": self.get_account_type(),
+            "account_number": self.get_account_number(),
+            "balance": f"{self.get_balance():.2f}",
+            "email": self.get_holder_email(),
+            "phone_number": self.get_holder_phone_number(),
+            "transactions": list(self.get_transactions()),
+        }

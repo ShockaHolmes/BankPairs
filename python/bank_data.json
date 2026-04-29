@@ -1,0 +1,11 @@
+[
+  {
+    "account_number": "INV3000",
+    "account_type": "InvestmentAccount",
+    "customer_name": "Alice Johnson",
+    "balance": 5000.0,
+    "email": "alice@example.com",
+    "phone_number": "(555) 678-9012",
+    "transactions": []
+  }
+]
