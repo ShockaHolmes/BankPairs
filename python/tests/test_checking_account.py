@@ -4,12 +4,16 @@ from src.business import Business
 from src.checking_account import CheckingAccount
 
 
+# All monetary values are integers representing cents.
+# e.g. 100000 cents = $1,000.00
+
+
 class TestCheckingAccount(unittest.TestCase):
 
     def test_constructor_with_person(self):
         # Given
         account_holder = Person("John", "Doe", "john@example.com", "555-1234")
-        balance = 1000.0
+        balance = 100000  # $1,000.00 in cents
         account_number = "CHK001"
         overdraft_protection = True
 
@@ -19,13 +23,13 @@ class TestCheckingAccount(unittest.TestCase):
         # Then
         self.assertIsNotNone(account)
         self.assertEqual(account_holder, account.get_account_holder())
-        self.assertAlmostEqual(balance, account.get_balance(), places=2)
+        self.assertEqual(balance, account.get_balance())
         self.assertEqual(account_number, account.get_account_number())
 
     def test_constructor_with_business(self):
         # Given
         account_holder = Business("Acme Corp")
-        balance = 5000.0
+        balance = 500000  # $5,000.00 in cents
         account_number = "CHK002"
         overdraft_protection = False
 
@@ -40,7 +44,7 @@ class TestCheckingAccount(unittest.TestCase):
         # Given
         account_holder = Person("Jane", "Smith", "jane@example.com", "555-5678")
         expected_overdraft_protection = True
-        account = CheckingAccount(account_holder, 1000.0, "CHK003", expected_overdraft_protection)
+        account = CheckingAccount(account_holder, 100000, "CHK003", expected_overdraft_protection)
 
         # When
         actual_overdraft_protection = account.get_overdraft_protection()
@@ -51,7 +55,7 @@ class TestCheckingAccount(unittest.TestCase):
     def test_set_overdraft_protection(self):
         # Given
         account_holder = Person("Bob", "Jones", "bob@example.com", "555-9999")
-        account = CheckingAccount(account_holder, 1000.0, "CHK004", True)
+        account = CheckingAccount(account_holder, 100000, "CHK004", True)
 
         # When
         account.set_overdraft_protection(False)
@@ -62,59 +66,59 @@ class TestCheckingAccount(unittest.TestCase):
     def test_debit_with_overdraft_protection_enabled(self):
         # Given
         account_holder = Person("Alice", "Brown", "alice@example.com", "555-1111")
-        account = CheckingAccount(account_holder, 500.0, "CHK005", True)
+        account = CheckingAccount(account_holder, 50000, "CHK005", True)  # $500.00
 
         # When - Attempting to overdraw
-        account.debit(600.0)
+        account.debit(60000)  # $600.00
 
-        # Then - Balance should remain unchanged because overdraft protection is enabled
-        self.assertAlmostEqual(500.0, account.get_balance(), places=2)
+        # Then - Balance should remain unchanged (overdraft protection enabled)
+        self.assertEqual(50000, account.get_balance())
 
     def test_debit_with_overdraft_protection_disabled(self):
         # Given
         account_holder = Person("Charlie", "Wilson", "charlie@example.com", "555-2222")
-        account = CheckingAccount(account_holder, 500.0, "CHK006", False)
+        account = CheckingAccount(account_holder, 50000, "CHK006", False)  # $500.00
 
         # When - Attempting to overdraw
-        account.debit(600.0)
+        account.debit(60000)  # $600.00
 
-        # Then - Balance should go negative because overdraft protection is disabled
-        self.assertAlmostEqual(-100.0, account.get_balance(), places=2)
+        # Then - Balance goes negative (overdraft protection disabled)
+        self.assertEqual(-10000, account.get_balance())  # -$100.00
 
     def test_debit_with_sufficient_funds(self):
         # Given
         account_holder = Person("David", "Miller", "david@example.com", "555-3333")
-        account = CheckingAccount(account_holder, 1000.0, "CHK007", True)
+        account = CheckingAccount(account_holder, 100000, "CHK007", True)  # $1,000.00
 
         # When
-        account.debit(300.0)
+        account.debit(30000)  # $300.00
 
         # Then
-        self.assertAlmostEqual(700.0, account.get_balance(), places=2)
+        self.assertEqual(70000, account.get_balance())  # $700.00
 
     def test_credit_in_checking_account(self):
         # Given
         account_holder = Person("Eve", "Davis", "eve@example.com", "555-4444")
-        account = CheckingAccount(account_holder, 1000.0, "CHK008", True)
+        account = CheckingAccount(account_holder, 100000, "CHK008", True)  # $1,000.00
 
         # When
-        account.credit(500.0)
+        account.credit(50000)  # $500.00
 
         # Then
-        self.assertAlmostEqual(1500.0, account.get_balance(), places=2)
+        self.assertEqual(150000, account.get_balance())  # $1,500.00
 
     def test_multiple_transactions(self):
         # Given
         account_holder = Person("Frank", "Garcia", "frank@example.com", "555-5555")
-        account = CheckingAccount(account_holder, 1000.0, "CHK009", False)
+        account = CheckingAccount(account_holder, 100000, "CHK009", False)  # $1,000.00
 
         # When
-        account.credit(200.0)
-        account.debit(300.0)
-        account.credit(100.0)
+        account.credit(20000)   # +$200.00 -> 120000
+        account.debit(30000)    # -$300.00 -> 90000
+        account.credit(10000)   # +$100.00 -> 100000
 
         # Then
-        self.assertAlmostEqual(1000.0, account.get_balance(), places=2)
+        self.assertEqual(100000, account.get_balance())  # $1,000.00
 
 
 if __name__ == "__main__":

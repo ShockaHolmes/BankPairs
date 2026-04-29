@@ -4,18 +4,19 @@ from src.account import Account
 class CheckingAccount(Account):
     def __init__(self, account_holder, balance, account_number, overdraft_protection):
         super().__init__(account_holder, balance, account_number)
-        # TODO: Implement constructor
+        self.balance = int(balance)  # stored as integer cents
+        self.overdraft_protection = overdraft_protection
 
     def get_overdraft_protection(self):
-        # TODO: Implement getter
-        return False
+        return self.overdraft_protection
 
     def set_overdraft_protection(self, overdraft_protection):
-        # TODO: Implement setter
-        pass
+        self.overdraft_protection = overdraft_protection
 
     def debit(self, amount):
-        # TODO: Implement debit method
-        # If overdraft_protection is True, don't allow balance to go negative
-        # If overdraft_protection is False, allow balance to go negative
-        pass
+        amount_cents = int(amount)
+        if self.overdraft_protection:
+            if self.balance - amount_cents >= 0:
+                self.balance -= amount_cents
+        else:
+            self.balance -= amount_cents
