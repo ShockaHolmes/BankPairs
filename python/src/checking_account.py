@@ -26,15 +26,17 @@ class CheckingAccount(Account):
         # If overdraft_protection is True, don't allow balance to go negative.
         # If overdraft_protection is False, allow balance to go negative.
         amount = self._to_cents(amount)
+        is_overdraft = amount > self._balance
 
-        if self._overdraft_protection and amount > self._balance:
+        if self._overdraft_protection and is_overdraft:
             print("Insufficient funds. Debit operation not allowed")
             self._transactions.append(
                 f"Debit denied: {amount / 100:.2f}, Balance: {self._balance / 100:.2f}"
             )
-            return
+            return True
 
         self._balance -= amount
         self._transactions.append(
             f"Debited: {amount / 100:.2f}, New Balance: {self._balance / 100:.2f}"
         )
+        return is_overdraft
